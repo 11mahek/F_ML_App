@@ -10,8 +10,8 @@ prompt = st.text_area("📝 Enter your prompt:", "Suggest 3 careers for someone 
 
 # Function to call Hugging Face Inference API
 def query_llama(prompt):
-    # API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
-    API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B"
+    API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
+    # API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B"
     headers = {
         "Authorization": f"Bearer {st.secrets['HUGGINGFACE_TOKEN']}",
         "Content-Type": "application/json"
