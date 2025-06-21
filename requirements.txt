@@ -1,7 +1,4 @@
 streamlit
-numpy
-pandas
 transformers
-torch
 requests
 huggingface_hub
