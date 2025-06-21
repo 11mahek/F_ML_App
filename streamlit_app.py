@@ -23,7 +23,14 @@ def query_llama(prompt):
         }
     }
     response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
+
+    # Print raw response for debugging
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        st.error("🛑 Hugging Face API did not return JSON. Here's the raw response:")
+        st.code(response.text)
+        return {}
 
 # Button to send prompt
 if st.button("🚀 Generate Response"):
