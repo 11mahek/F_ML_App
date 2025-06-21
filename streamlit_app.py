@@ -16,7 +16,7 @@ interest = st.text_input("💭 Your Interests (e.g., tech, art, science)")
 if name and age and interest and st.button("✨ Generate Quiz"):
     with st.spinner("Generating smart quiz..."):
         # Hugging Face API Setup
-        api_url = "https://api-inference.huggingface.co/models/TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+        api_url = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
         headers = {"Authorization": f"Bearer {st.secrets['hf_token']}"}
         prompt = (
             f"Create one fun multiple choice career quiz question for a {age}-year-old "
