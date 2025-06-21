@@ -1,40 +1,34 @@
 import streamlit as st
-import requests
+import os
+from huggingface_hub import InferenceClient
 
-# Set page config
-st.set_page_config(page_title="AI Career Quiz", layout="centered")
+# Load your Hugging Face token from Streamlit secrets
+HF_TOKEN = st.secrets["hf_token"]
 
-st.title("🎯 AI Career Quiz Generator")
-st.markdown("Answer a few questions and let AI guide your career journey!")
+# Initialize the Hugging Face Inference Client
+client = InferenceClient(
+    provider="nscale",
+    api_key=HF_TOKEN,
+)
 
-# User Inputs
-name = st.text_input("👤 Your Name")
-age = st.number_input("🎂 Your Age", min_value=10, max_value=30, value=17)
-interest = st.text_input("💭 Your Interests (e.g., tech, art, science)")
+st.set_page_config(page_title="LLaMA 3.1 Chat 💬", layout="centered")
+st.title("🤖 Chat with LLaMA 3.1 (8B-Instruct)")
 
-# Only proceed if all inputs are filled
-if name and age and interest and st.button("✨ Generate Quiz"):
-    with st.spinner("Generating smart quiz..."):
-        # Hugging Face API Setup
-        api_url = "https://api-inference.huggingface.co/models/google/flan-t5-base"
-        headers = {"Authorization": f"Bearer {st.secrets['hf_token']}"}
-        prompt = (
-            f"Create one fun multiple choice career quiz question for a {age}-year-old "
-            f"interested in {interest}. Format it like:\n"
-            f"Q: ...?\nA. ...\nB. ...\nC. ...\nD. ..."
-        )
+# User input prompt
+user_input = st.text_area("🗣️ Ask something:", value="What is the capital of France?", height=100)
 
-        # Send request to model
-        response = requests.post(api_url, headers=headers, json={"inputs": prompt})
-        
-        # Handle response
-        if response.status_code == 200:
-            try:
-                result = response.json()
-                quiz = result[0]["generated_text"]
-                st.markdown("### 📘 AI-Generated Quiz Question")
-                st.markdown(f"{quiz}")
-            except Exception as e:
-                st.error("❌ Couldn't parse the AI response.")
-        else:
-            st.error(f"❌ API Error: {response.status_code}")
+if st.button("✨ Get Answer"):
+    with st.spinner("Thinking with LLaMA 3.1..."):
+        try:
+            response = client.chat.completions.create(
+                model="meta-llama/Llama-3.1-8B-Instruct",
+                messages=[
+                    {"role": "user", "content": user_input}
+                ]
+            )
+
+            st.markdown("### 🧠 Response:")
+            st.write(response.choices[0].message.content)
+
+        except Exception as e:
+            st.error(f"❌ Error: {str(e)}")
