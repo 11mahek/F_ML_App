@@ -25,4 +25,5 @@ if st.button("Generate Question") and interest:
         result = generator(prompt, max_new_tokens=60, do_sample=True, temperature=0.7)
         question = result[0]['generated_text']
         st.markdown("### ✨ Here's your AI-generated question:")
-        st.markdown(f"```\n{question}\n```")
+        st.markdown(f"**📘 Quiz Question:** {question}")
+
