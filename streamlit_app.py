@@ -1,34 +1,26 @@
-import streamlit as st
-import os
-from huggingface_hub import InferenceClient
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 
-# Load your Hugging Face token from Streamlit secrets
-HF_TOKEN = st.secrets["hf_token"]
+# Load model and tokenizer
+model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
 
-# Initialize the Hugging Face Inference Client
-client = InferenceClient(
-    provider="nscale",
-    api_key=HF_TOKEN,
+# Load tokenizer
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+
+# Load model
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    device_map="auto",           # Uses GPU if available
+    torch_dtype="auto"           # Auto-selects appropriate dtype
 )
 
-st.set_page_config(page_title="LLaMA 3.1 Chat 💬", layout="centered")
-st.title("🤖 Chat with LLaMA 3.1 (8B-Instruct)")
+# Create text generation pipeline
+generator = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
-# User input prompt
-user_input = st.text_area("🗣️ Ask something:", value="What is the capital of France?", height=100)
+# Prompt
+prompt = "Tell me a short story about a robot who wants to become human."
 
-if st.button("✨ Get Answer"):
-    with st.spinner("Thinking with LLaMA 3.1..."):
-        try:
-            response = client.chat.completions.create(
-                model="meta-llama/Llama-3.1-8B-Instruct",
-                messages=[
-                    {"role": "user", "content": user_input}
-                ]
-            )
+# Generate text
+output = generator(prompt, max_new_tokens=100, do_sample=True, temperature=0.7)
 
-            st.markdown("### 🧠 Response:")
-            st.write(response.choices[0].message.content)
-
-        except Exception as e:
-            st.error(f"❌ Error: {str(e)}")
+# Print result
+print(output[0]["generated_text"])
